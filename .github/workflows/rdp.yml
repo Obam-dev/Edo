@@ -1,0 +1,32 @@
+name: RDP Server
+
+on: 
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Update and install XFCE and XRDP
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y xfce4 xfce4-goodies xorg dbus-x11 x11-xserver-utils
+        sudo apt-get install -y xrdp
+        sudo systemctl enable xrdp
+        sudo adduser $USER ssl-cert
+        sudo service xrdp start
+
+    - name: Set RDP password
+      run: |
+        echo -e "yourpassword\nyourpassword" | sudo passwd $USER
+
+    - name: Print RDP Info
+      run: |
+        echo "RDP Server is running."
+        echo "You can connect using the following details:"
+        echo "Address: $(curl -4 ifconfig.co):3389"
+        echo "Username: $USER"
+        echo "Password: yourpassword"
